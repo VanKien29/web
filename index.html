@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chúc Thi Tốt Nghiệp!</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #6b6bff);
+        background-size: 400%;
+        font-family: "Poppins", sans-serif;
+        overflow: hidden;
+        animation: colorShift 15s ease-in-out infinite;
+      }
+      .container {
+        text-align: center;
+        position: relative;
+        z-index: 10;
+        color: #fff;
+      }
+      h1 {
+        font-size: 5em;
+        text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        animation: glow 3s infinite;
+        margin-bottom: 20px;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      .letter {
+        display: inline-block;
+        animation: backspaceEffect 4s infinite;
+      }
+      canvas#confetti {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 5;
+        pointer-events: none;
+      }
+      .star {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background: #fff;
+        border-radius: 50%;
+        animation: twinkle 1.5s infinite;
+        z-index: 2;
+      }
+      .firework {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
+        border-radius: 50%;
+        animation: explode 1s ease-out forwards;
+        z-index: 3;
+      }
+      .petal {
+        position: absolute;
+        width: 10px;
+        height: 20px;
+        background: #ff9a9e;
+        border-radius: 50%;
+        animation: fall 5s linear infinite;
+        z-index: 4;
+      }
+      .word {
+        position: absolute;
+        color: #fff;
+        font-size: 1.6em;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        animation: fallWord 6s linear forwards;
+        z-index: 6;
+        white-space: nowrap;
+        opacity: 0;
+      }
+      @keyframes colorShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+      @keyframes glow {
+        0%,
+        100% {
+          text-shadow: 0 0 10px #ff4757, 0 0 20px #ff4757;
+        }
+        50% {
+          text-shadow: 0 0 20px #ff9a9e, 0 0 30px #ff9a9e;
+        }
+      }
+      @keyframes backspaceEffect {
+        0% {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        40% {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        50% {
+          transform: translateX(0);
+          opacity: 0;
+        }
+        60% {
+          transform: translateX(calc(50vw * var(--direction)));
+          opacity: 0;
+        }
+        80% {
+          transform: translateX(calc(50vw * var(--direction)));
+          opacity: 0;
+        }
+        90% {
+          transform: translateX(0);
+          opacity: 0;
+        }
+        100% {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+      @keyframes explode {
+        0% {
+          transform: scale(0);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(3);
+          opacity: 0;
+        }
+      }
+      @keyframes fall {
+        0% {
+          transform: translateY(-100vh) rotate(0deg);
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+        }
+      }
+      @keyframes fallWord {
+        0% {
+          transform: translateY(-100vh) scale(0.8);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        70% {
+          transform: translateY(80vh) scale(1.1);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) scale(1.1);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="confetti"></canvas>
+    <div class="container">
+      <h1 id="title"></h1>
+    </div>
+    <script>
+      // Danh sách lời chúc (50 câu)
+      const wishes = [
+        "Chinh phục kỳ thi với sự tự tin!",
+        "Từng bước nhỏ dẫn bạn đến thành công!",
+        "Bình tĩnh, bạn sẽ làm tốt nhất!",
+        "Tỏa sáng trong phòng thi nhé!",
+        "Kiến thức của bạn là sức mạnh!",
+        "Chúc bạn đạt điểm số mơ ước!",
+        "Hãy tin vào khả năng của mình!",
+        "Kỳ thi là cơ hội để bạn tỏa sáng!",
+        "Cố lên, mọi thứ đều trong tầm tay!",
+        "Bạn là ngôi sao sáng nhất hôm nay!",
+        "Chúc bạn vượt qua thử thách dễ dàng!",
+        "Hãy giữ vững tinh thần chiến thắng!",
+        "Thành công đang chờ bạn phía trước!",
+        "Bạn đã chuẩn bị, giờ là lúc bứt phá!",
+        "Chúc bạn làm bài thi suôn sẻ!",
+        "Đừng lo, bạn sẽ làm được thôi!",
+        "Hãy tự hào với nỗ lực của mình!",
+        "Chúc bạn vững vàng trước mọi câu hỏi!",
+        "Bạn xứng đáng với những điều tuyệt vời!",
+        "Kỳ thi này sẽ là kỷ niệm đẹp!",
+        "Hãy để tài năng của bạn tỏa sáng!",
+        "Chúc bạn thi tốt và đạt kết quả cao!",
+        "Mỗi câu trả lời đều là bước tiến!",
+        "Bạn có thể làm được mọi thứ!",
+        "Chúc bạn tự tin và thành công rực rỡ!",
+        "Hãy mạnh mẽ, bạn là người giỏi nhất!",
+        "Kỳ thi là sân khấu của bạn!",
+        "Chúc bạn hoàn thành xuất sắc bài thi!",
+        "Hãy giữ nụ cười và làm bài thật tốt!",
+        "Bạn đã sẵn sàng để chinh phục tất cả!",
+        "Chúc bạn thi tốt với tâm thế tự tin!",
+        "Hãy biến kỳ thi thành cơ hội vàng!",
+        "Bạn là niềm tự hào của mọi người!",
+        "Chúc bạn đạt được mọi mục tiêu!",
+        "Từng giây phút đều là cơ hội để tỏa sáng!",
+        "Hãy làm bài thi với tất cả đam mê!",
+        "Chúc bạn vượt qua mọi áp lực!",
+        "Bạn sẽ là người chiến thắng hôm nay!",
+        "Hãy để kiến thức dẫn lối bạn!",
+        "Chúc bạn thi tốt và rực rỡ thành công!",
+        "Mỗi câu hỏi là một thử thách để vượt qua!",
+        "Hãy tự tin, bạn đã chuẩn bị kỹ càng!",
+        "Chúc bạn làm bài thi thật xuất sắc!",
+        "Bạn là nguồn cảm hứng cho mọi người!",
+        "Hãy giữ bình tĩnh và làm bài thật tốt!",
+        "Chúc bạn đạt điểm cao ngất ngưởng!",
+        "Kỳ thi này sẽ là bước ngoặt của bạn!",
+        "Hãy để tài năng của bạn bùng nổ!",
+        "Chúc bạn thi tốt và vươn tới ước mơ!",
+        "Bạn sẽ làm nên điều kỳ diệu hôm nay!",
+      ];
+
+      // Tạo hiệu ứng chữ cho tiêu đề
+      const title = document.getElementById("title");
+      const text = "Chúc Con Lợn Nhựa Thi Tốt";
+      text.split("").forEach((char, index) => {
+        const span = document.createElement("span");
+        span.className = "letter";
+        span.textContent = char === " " ? "\u00A0" : char;
+        span.style.setProperty("--direction", index % 2 === 0 ? 1 : -1);
+        span.style.animationDelay = `${index * 0.05}s`;
+        title.appendChild(span);
+      });
+
+      // Tạo ngôi sao
+      for (let i = 0; i < 80; i++) {
+        let star = document.createElement("div");
+        star.className = "star";
+        star.style.left = Math.random() * window.innerWidth + "px";
+        star.style.top = Math.random() * window.innerHeight + "px";
+        star.style.animationDelay = Math.random() * 1.5 + "s";
+        document.body.appendChild(star);
+      }
+
+      // Tạo cánh hoa
+      for (let i = 0; i < 30; i++) {
+        let petal = document.createElement("div");
+        petal.className = "petal";
+        petal.style.left = Math.random() * window.innerWidth + "px";
+        petal.style.animationDelay = Math.random() * 5 + "s";
+        document.body.appendChild(petal);
+      }
+
+      // Hiệu ứng pháo hoa
+      function createFirework() {
+        let firework = document.createElement("div");
+        firework.className = "firework";
+        firework.style.left = Math.random() * window.innerWidth + "px";
+        firework.style.top = Math.random() * window.innerHeight + "px";
+        document.body.appendChild(firework);
+        setTimeout(() => firework.remove(), 1000);
+      }
+      setInterval(createFirework, 400);
+
+      // Tạo chữ rơi
+      function createFallingWord() {
+        let word = document.createElement("div");
+        word.className = "word";
+        word.textContent = wishes[Math.floor(Math.random() * wishes.length)];
+        word.style.left = Math.random() * (window.innerWidth - 200) + "px";
+        word.style.animationDuration = Math.random() * 3 + 5 + "s";
+        word.style.color = `hsl(${Math.random() * 360}, 80%, 80%)`;
+        document.body.appendChild(word);
+        setTimeout(() => word.remove(), 8000);
+      }
+      setInterval(createFallingWord, 300);
+
+      // Hiệu ứng confetti
+      const canvas = document.getElementById("confetti");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let particles = [];
+
+      function Particle(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 12 + 5;
+        this.speedX = Math.random() * 4 - 2;
+        this.speedY = Math.random() * 2 + 1;
+        this.color = `hsl(${Math.random() * 360}, 80%, 60%)`;
+        this.gravity = 0.1;
+        this.alpha = 1;
+        this.angle = Math.random() * Math.PI * 2;
+        this.spin = Math.random() * 0.05 - 0.025;
+      }
+
+      Particle.prototype.update = function () {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.speedY += this.gravity;
+        this.alpha -= 0.002;
+        this.angle += this.spin;
+        if (this.alpha < 0) this.alpha = 0;
+        if (this.y > canvas.height) {
+          this.y = 0;
+          this.x = Math.random() * canvas.width;
+          this.alpha = 1;
+          this.speedY = Math.random() * 2 + 1;
+        }
+      };
+
+      Particle.prototype.draw = function () {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+        ctx.fillStyle = this.color;
+        ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+        ctx.restore();
+      };
+
+      function animateConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((particle) => {
+          particle.update();
+          particle.draw();
+        });
+        requestAnimationFrame(animateConfetti);
+      }
+
+      // Khởi tạo confetti
+      for (let i = 0; i < 120; i++) {
+        particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+      }
+      animateConfetti();
+
+      // Điều chỉnh canvas khi thay đổi kích thước
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+    </script>
+  </body>
+</html>
