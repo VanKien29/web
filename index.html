@@ -26,12 +26,14 @@
         position: relative;
         z-index: 10;
         color: #fff;
+        width: 100%;
+        max-width: 90vw;
       }
       h1 {
-        font-size: 5em;
-        text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        font-size: 8vw;
+        text-shadow: 0 0 2vw rgba(0, 0, 0, 0.5);
         animation: glow 3s infinite;
-        margin-bottom: 20px;
+        margin-bottom: 2vw;
         display: inline-block;
         white-space: nowrap;
       }
@@ -43,13 +45,15 @@
         position: absolute;
         top: 0;
         left: 0;
+        width: 100%;
+        height: 100%;
         z-index: 5;
         pointer-events: none;
       }
       .star {
         position: absolute;
-        width: 6px;
-        height: 6px;
+        width: 0.6vw;
+        height: 0.6vw;
         background: #fff;
         border-radius: 50%;
         animation: twinkle 1.5s infinite;
@@ -57,8 +61,8 @@
       }
       .firework {
         position: absolute;
-        width: 10px;
-        height: 10px;
+        width: 1vw;
+        height: 1vw;
         background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
         border-radius: 50%;
         animation: explode 1s ease-out forwards;
@@ -66,8 +70,8 @@
       }
       .petal {
         position: absolute;
-        width: 10px;
-        height: 20px;
+        width: 1vw;
+        height: 2vw;
         background: #ff9a9e;
         border-radius: 50%;
         animation: fall 5s linear infinite;
@@ -76,9 +80,9 @@
       .word {
         position: absolute;
         color: #fff;
-        font-size: 1.6em;
+        font-size: 2vw;
         font-weight: bold;
-        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        text-shadow: 0 0 1vw rgba(0, 0, 0, 0.5);
         animation: fallWord 6s linear forwards;
         z-index: 6;
         white-space: nowrap;
@@ -98,10 +102,10 @@
       @keyframes glow {
         0%,
         100% {
-          text-shadow: 0 0 10px #ff4757, 0 0 20px #ff4757;
+          text-shadow: 0 0 1vw #ff4757, 0 0 2vw #ff4757;
         }
         50% {
-          text-shadow: 0 0 20px #ff9a9e, 0 0 30px #ff9a9e;
+          text-shadow: 0 0 2vw #ff9a9e, 0 0 3vw #ff9a9e;
         }
       }
       @keyframes backspaceEffect {
@@ -118,11 +122,11 @@
           opacity: 0;
         }
         60% {
-          transform: translateX(calc(50vw * var(--direction)));
+          transform: translateX(calc(40vw * var(--direction)));
           opacity: 0;
         }
         80% {
-          transform: translateX(calc(50vw * var(--direction)));
+          transform: translateX(calc(40vw * var(--direction)));
           opacity: 0;
         }
         90% {
@@ -178,6 +182,68 @@
           opacity: 0;
         }
       }
+      /* Media queries cho thiết bị di động */
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 6vw;
+        }
+        .word {
+          font-size: 1.8vw;
+        }
+        .star {
+          width: 0.5vw;
+          height: 0.5vw;
+        }
+        .petal {
+          width: 0.8vw;
+          height: 1.6vw;
+        }
+        .firework {
+          width: 0.8vw;
+          height: 0.8vw;
+        }
+        @keyframes backspaceEffect {
+          0% {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          40% {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          50% {
+            transform: translateX(0);
+            opacity: 0;
+          }
+          60% {
+            transform: translateX(calc(20vw * var(--direction)));
+            opacity: 0;
+          }
+          80% {
+            transform: translateX(calc(20vw * var(--direction)));
+            opacity: 0;
+          }
+          90% {
+            transform: translateX(0);
+            opacity: 0;
+          }
+          100% {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+      }
+      @media (max-width: 480px) {
+        h1 {
+          font-size: 5vw;
+        }
+        .word {
+          font-size: 1.5vw;
+        }
+        .letter {
+          animation-duration: 3.5s;
+        }
+      }
     </style>
   </head>
   <body>
@@ -213,7 +279,6 @@
         "Mỗi câu trả lời đều là bước tiến!",
         "Bạn có thể làm được mọi thứ!",
         "Chúc bạn tự tin và thành công rực rỡ!",
-        "Hãy mạnh mẽ, bạn là người giỏi nhất!",
         "Kỳ thi là sân khấu của bạn!",
         "Chúc bạn hoàn thành xuất sắc bài thi!",
         "Hãy giữ nụ cười và làm bài thật tốt!",
@@ -242,7 +307,7 @@
 
       // Tạo hiệu ứng chữ cho tiêu đề
       const title = document.getElementById("title");
-      const text = "Chúc Con Lợn Nhựa Thi Tốt";
+      const text = "Chúc Con Lợn Nhựa Thi Tốt!";
       text.split("").forEach((char, index) => {
         const span = document.createElement("span");
         span.className = "letter";
@@ -252,56 +317,96 @@
         title.appendChild(span);
       });
 
-      // Tạo ngôi sao
-      for (let i = 0; i < 80; i++) {
-        let star = document.createElement("div");
+      // Hàm tạo và quản lý các phần tử động
+      let stars = [];
+      let petals = [];
+      let words = [];
+
+      function createStar() {
+        const star = document.createElement("div");
         star.className = "star";
         star.style.left = Math.random() * window.innerWidth + "px";
         star.style.top = Math.random() * window.innerHeight + "px";
         star.style.animationDelay = Math.random() * 1.5 + "s";
         document.body.appendChild(star);
+        stars.push(star);
+        return star;
       }
 
-      // Tạo cánh hoa
-      for (let i = 0; i < 30; i++) {
-        let petal = document.createElement("div");
+      function createPetal() {
+        const petal = document.createElement("div");
         petal.className = "petal";
         petal.style.left = Math.random() * window.innerWidth + "px";
         petal.style.animationDelay = Math.random() * 5 + "s";
         document.body.appendChild(petal);
+        petals.push(petal);
+        return petal;
       }
 
-      // Hiệu ứng pháo hoa
       function createFirework() {
-        let firework = document.createElement("div");
+        const firework = document.createElement("div");
         firework.className = "firework";
         firework.style.left = Math.random() * window.innerWidth + "px";
         firework.style.top = Math.random() * window.innerHeight + "px";
         document.body.appendChild(firework);
         setTimeout(() => firework.remove(), 1000);
       }
-      setInterval(createFirework, 400);
 
-      // Tạo chữ rơi
       function createFallingWord() {
-        let word = document.createElement("div");
+        const word = document.createElement("div");
         word.className = "word";
         word.textContent = wishes[Math.floor(Math.random() * wishes.length)];
-        word.style.left = Math.random() * (window.innerWidth - 200) + "px";
+        word.style.left = Math.random() * (window.innerWidth - 0.15 * window.innerWidth) + "px";
         word.style.animationDuration = Math.random() * 3 + 5 + "s";
         word.style.color = `hsl(${Math.random() * 360}, 80%, 80%)`;
         document.body.appendChild(word);
-        setTimeout(() => word.remove(), 8000);
+        words.push(word);
+        setTimeout(() => {
+          word.remove();
+          words = words.filter((w) => w !== word);
+        }, 100000);
       }
-      setInterval(createFallingWord, 300);
+
+      // Khởi tạo số lượng phần tử dựa trên kích thước màn hình
+      function initializeElements() {
+        const isMobile = window.innerWidth <= 768;
+        const starCount = isMobile ? 50 : 80;
+        const petalCount = isMobile ? 20 : 30;
+        const wordInterval = isMobile ? 400 : 300;
+        const fireworkInterval = isMobile ? 600 : 400;
+
+        // Xóa các phần tử cũ
+        stars.forEach((star) => star.remove());
+        petals.forEach((petal) => petal.remove());
+        words.forEach((word) => word.remove());
+        stars = [];
+        petals = [];
+        words = [];
+
+        // Tạo ngôi sao
+        for (let i = 0; i < starCount; i++) {
+          createStar();
+        }
+
+        // Tạo cánh hoa
+        for (let i = 0; i < petalCount; i++) {
+          createPetal();
+        }
+
+        // Xóa interval cũ nếu có
+        if (window.wordIntervalId) clearInterval(window.wordIntervalId);
+        if (window.fireworkIntervalId) clearInterval(window.fireworkIntervalId);
+
+        // Tạo chữ rơi và pháo hoa
+        window.wordIntervalId = setInterval(createFallingWord, wordInterval);
+        window.fireworkIntervalId = setInterval(createFirework, fireworkInterval);
+      }
 
       // Hiệu ứng confetti
       const canvas = document.getElementById("confetti");
       const ctx = canvas.getContext("2d");
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
       let particles = [];
+      let particleCount = window.innerWidth <= 768 ? 80 : 120;
 
       function Particle(x, y) {
         this.x = x;
@@ -351,16 +456,31 @@
       }
 
       // Khởi tạo confetti
-      for (let i = 0; i < 120; i++) {
-        particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+      function initializeConfetti() {
+        particleCount = window.innerWidth <= 768 ? 80 : 120;
+        particles = [];
+        for (let i = 0; i < particleCount; i++) {
+          particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+        }
       }
-      animateConfetti();
 
-      // Điều chỉnh canvas khi thay đổi kích thước
-      window.addEventListener("resize", () => {
+      // Cập nhật canvas và confetti khi resize
+      function handleResize() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-      });
+        initializeElements();
+        initializeConfetti();
+      }
+
+      // Khởi tạo ban đầu
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initializeElements();
+      initializeConfetti();
+      animateConfetti();
+
+      // Điều chỉnh khi thay đổi kích thước
+      window.addEventListener("resize", handleResize);
     </script>
   </body>
 </html>
